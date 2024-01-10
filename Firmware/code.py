@@ -50,6 +50,8 @@ while True:
     if Censor_Btn.value:
         print("Censor Buttion pressed")
         press_button(Keycode.SPACEBAR, release=False)
+    else:
+        keyboard.release(Keycode.SPACEBAR)
         
     if Screen_1_Btn.value:
         print("Buttion 1 pressed")
