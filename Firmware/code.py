@@ -66,7 +66,7 @@ while True:
         press_button(Keycode.THREE)
         
     if Screen_4_Btn.value:
-        print("Buttion 3 pressed")
+        print("Buttion 4 pressed")
         press_button(Keycode.FOUR)
         
     time.sleep(0.1)
