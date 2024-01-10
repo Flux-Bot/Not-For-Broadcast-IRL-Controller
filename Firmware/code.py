@@ -5,72 +5,36 @@ import usb_hid
 from adafruit_hid.keyboard import Keyboard
 from adafruit_hid.keycode import Keycode
 
-#Setting pin varables
-Screen_1_Btn_Pin = board.GP1
-Screen_2_Btn_Pin = board.GP2
-Screen_3_Btn_Pin = board.GP3
-Screen_4_Btn_Pin = board.GP4
-Censor_Btn_Pin = board.GP15
+class BtnControl:
+    def __init__(self, name, pin, key):
+        self.name=name
+        self.btn=digitalio.DigitalInOut(pin)
+        self.btn.direction=digitalio.Direction.INPUT
+        self.btn.pull=digitalio.Pull.DOWN
+        self.key=key
+        self.last_value=False
 
+    def update(self):
+        global keyboard
+        if not self.last_value and self.btn.value:
+            print(self.name+" pressed")
+            keyboard.press(self.key)
+        if self.last_value and not self.btn.value:
+            print(self.name+" released")
+            keyboard.release(self.key)
+        self.last_value=self.btn.value
 
-#..
-keyboard = Keyboard(usb_hid.devices)
-
-#Screen Button 1
-Screen_1_Btn = digitalio.DigitalInOut(Screen_1_Btn_Pin)
-Screen_1_Btn.direction = digitalio.Direction.INPUT
-Screen_1_Btn.pull = digitalio.Pull.DOWN
-
-#Screen Button 2
-Screen_2_Btn = digitalio.DigitalInOut(Screen_2_Btn_Pin)
-Screen_2_Btn.direction = digitalio.Direction.INPUT
-Screen_2_Btn.pull = digitalio.Pull.DOWN
-
-#Screen Button 3
-Screen_3_Btn = digitalio.DigitalInOut(Screen_3_Btn_Pin)
-Screen_3_Btn.direction = digitalio.Direction.INPUT
-Screen_3_Btn.pull = digitalio.Pull.DOWN
-
-#Screen Button 4
-Screen_4_Btn = digitalio.DigitalInOut(Screen_4_Btn_Pin)
-Screen_4_Btn.direction = digitalio.Direction.INPUT
-Screen_4_Btn.pull = digitalio.Pull.DOWN
-
-#Censor Button
-Censor_Btn = digitalio.DigitalInOut(Censor_Btn_Pin)
-Censor_Btn.direction = digitalio.Direction.INPUT
-Censor_Btn.pull = digitalio.Pull.DOWN
-
+list_btns=[
+    BtnControl("Censor button", board.GP15, Keycode.SPACEBAR),
+    BtnControl("Button 1", board.GP1, Keycode.ONE),
+    BtnControl("Button 2", board.GP2, Keycode.TWO),
+    BtnControl("Button 3", board.GP3, Keycode.THREE),
+    BtnControl("Button 4", board.GP4, Keycode.FOUR),
+]
 
 while True:
-    if Censor_Btn.value:
-        print("Censor Buttion pressed")
-        keyboard.press(Keycode.SPACEBAR)
-        time.sleep(0.1)
-        keyboard.release(Keycode.SPACEBAR)
-        
-    if Screen_1_Btn.value:
-        print("Buttion 1 pressed")
-        keyboard.press(Keycode.ONE)    
-        time.sleep(0.1)
-        keyboard.release(Keycode.ONE)
-        
-    if Screen_2_Btn.value:
-        print("Buttion 2 pressed")
-        keyboard.press(Keycode.TWO)    
-        time.sleep(0.1)
-        keyboard.release(Keycode.TWO)
-    
-    if Screen_3_Btn.value:
-        print("Buttion 3 pressed")
-        keyboard.press(Keycode.THREE)    
-        time.sleep(0.1)
-        keyboard.release(Keycode.THREE)
-        
-    if Screen_4_Btn.value:
-        print("Buttion 3 pressed")
-        keyboard.press(Keycode.FOUR)    
-        time.sleep(0.1)
-        keyboard.release(Keycode.FOUR)
-        
+    for button in list_btns:
+        button.update()
+
     time.sleep(0.1)
+
